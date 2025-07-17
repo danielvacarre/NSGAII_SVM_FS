@@ -495,10 +495,10 @@ class Population:
         child4.vectors = [mother.vectors[0], father.vectors[1]]
 
         # Evaluate the offspring solutions
-        #child1.evaluate_solution(data, output, costs, inputs)
-        #child2.evaluate_solution(data, output, costs, inputs)
-        #child3.evaluate_solution(data, output, costs, inputs)
-        #child4.evaluate_solution(data, output, costs, inputs)
+        child1.evaluate_solution(data, output, costs, inputs)
+        child2.evaluate_solution(data, output, costs, inputs)
+        child3.evaluate_solution(data, output, costs, inputs)
+        child4.evaluate_solution(data, output, costs, inputs)
 
         # Add all offspring to the list
         offspring.extend([child1, child2, child3, child4])

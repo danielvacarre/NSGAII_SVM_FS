@@ -1,6 +1,7 @@
 # 🧠 NSGA2-Multi-objective SVM Classifier with Feature Selection
 
-This project implements the algorithms proposed by Valero et al. (2023) [https://doi.org/10.1016/j.cor.2022.106131] and Alcaraz, J. (2024) [https://doi.org/10.1016/j.cor.2024.106821].
+This project implements the algorithms proposed by Valero et al. (2023) https://doi.org/10.1016/j.cor.2022.106131 and Alcaraz, J. (2024) 
+https://doi.org/10.1016/j.cor.2024.106821.
 
 It is a metaheuristic that solves the **soft-margin Support Vector Machine (SVM)** problem when combined with **Feature Selection**. The result of the algorithm is a **Pareto front**, where each solution is an SVM-based classifier that helps decision-makers select the best model for their specific problem.
 

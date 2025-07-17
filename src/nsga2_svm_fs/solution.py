@@ -1,9 +1,7 @@
 from random import uniform, randint, sample, choice
 
-from numpy import dot, mean, sign
+from numpy import dot, mean
 from numpy.linalg import norm
-from sklearn.metrics import confusion_matrix, accuracy_score, precision_score, recall_score, f1_score, \
-    cohen_kappa_score, roc_auc_score
 
 
 class Solution:
@@ -280,104 +278,53 @@ class Solution:
         # Avoid division by zero
         self.objective[0] = distance / denominator if denominator != 0 else -1
 
-    # def calculate_epsilon_objective(self, data, output):
-    #     """
-    #     Calculates the epsilon objective, which measures the number of misclassified points.
-    #
-    #     Parameters
-    #     ----------
-    #     data : pandas.DataFrame
-    #         Full dataset.
-    #     output : str
-    #         Name of the output column.
-    #     """
-    #
-    #     self.objective[1] = 0
-    #     self.objective[3] = 0
-    #     self.objective[4] = 0
-    #
-    #     norm_ = norm(self.plane_coords)
-    #
-    #     b0, b1 = self.plane_term_b[0], self.plane_term_b[1]
-    #     #Indicates if the plane for class -1 is above the plane for class 1
-    #     b_condition = b1 < b0
-    #
-    #     for idx, row in data.iterrows():
-    #         class_ = row[output]
-    #
-    #         # Dot product between plane_coords and feature values
-    #         distance = sum(
-    #             self.plane_coords[i] * row[feature]
-    #             for i, feature in enumerate(self.features)
-    #         )
-    #         distance += b1 if class_ == 1 else b0
-    #         distance /= norm_
-    #
-    #         if b_condition:
-    #             if class_ == -1 and distance > 0:
-    #                 self.objective[4] += 1
-    #                 self.objective[1] += distance
-    #             elif class_ == 1 and distance < 0:
-    #                 self.objective[3] += 1
-    #                 self.objective[1] += abs(distance)
-    #         else:
-    #             if class_ == -1 and distance < 0:
-    #                 self.objective[4] += 1
-    #                 self.objective[1] += abs(distance)
-    #             elif class_ == 1 and distance > 0:
-    #                 self.objective[3] += 1
-    #                 self.objective[1] += distance
-
     def calculate_epsilon_objective(self, data, output):
         """
-        Calcula la métrica epsilon como la suma de distancias mal clasificadas
-        y guarda métricas basadas en la matriz de confusión.
-        """
-        # Inicializar objetivos
-        self.objective[1] = 0  # Epsilon
-        self.objective[3] = 0  # Falsos positivos
-        self.objective[4] = 0  # Falsos negativos
+        Calculates the epsilon objective, which measures the number of misclassified points.
 
-        # Norm del vector normal al plano
+        Parameters
+        ----------
+        data : pandas.DataFrame
+            Full dataset.
+        output : str
+            Name of the output column.
+        """
+
+        self.objective[1] = 0
+        self.objective[3] = 0
+        self.objective[4] = 0
+
         norm_ = norm(self.plane_coords)
 
-        # Usamos el plano medio como frontera de decisión
         b0, b1 = self.plane_term_b[0], self.plane_term_b[1]
-        b_mid = (b0 + b1) / 2
+        #Indicates if the plane for class -1 is above the plane for class 1
+        b_condition = b1 < b0
 
-        y_true = []
-        y_pred = []
-        decision_scores = []
         for idx, row in data.iterrows():
-            x = [row[feat] for feat in self.features]
             class_ = row[output]
-            y_true.append(class_)
 
-            # Función de decisión: f(x) = w·x + b
-            f_x = dot(self.plane_coords, x) + b_mid
-            pred = 1 if f_x >= 0 else -1
-            y_pred.append(pred)
-            decision_scores.append(f_x)
-            # Si está mal clasificado, sumar a epsilon y contar tipo de error
-            if pred != class_:
-                self.objective[1] += abs(f_x) / norm_  # Epsilon suma distancia mal clasificada
+            # Dot product between plane_coords and feature values
+            distance = sum(
+                self.plane_coords[i] * row[feature]
+                for i, feature in enumerate(self.features)
+            )
+            distance += b1 if class_ == 1 else b0
+            distance /= norm_
 
-                if class_ == 1:
-                    self.objective[3] += 1  # Falso negativo (positivo mal clasificado)
-                else:
-                    self.objective[4] += 1  # Falso positivo (negativo mal clasificado)
-
-        # Calcular métricas de clasificación
-        self.conf_matrix = confusion_matrix(y_true, y_pred, labels=[-1, 1])
-        self.accuracy = accuracy_score(y_true, y_pred)
-        self.precision = precision_score(y_true, y_pred, zero_division=0, pos_label=1)
-        self.recall = recall_score(y_true, y_pred, zero_division=0, pos_label=1)
-        self.f1 = f1_score(y_true, y_pred, zero_division=0, pos_label=1)
-        self.kappa = cohen_kappa_score(y_true, y_pred)
-
-        y_true_auc = [(1 if y == 1 else 0) for y in y_true]
-        self.auc = roc_auc_score(y_true_auc, decision_scores)
-
+            if b_condition:
+                if class_ == -1 and distance > 0:
+                    self.objective[4] += 1
+                    self.objective[1] += distance
+                elif class_ == 1 and distance < 0:
+                    self.objective[3] += 1
+                    self.objective[1] += abs(distance)
+            else:
+                if class_ == -1 and distance < 0:
+                    self.objective[4] += 1
+                    self.objective[1] += abs(distance)
+                elif class_ == 1 and distance > 0:
+                    self.objective[3] += 1
+                    self.objective[1] += distance
 
     def calculate_cost_objective(self, costs, inputs):
         """
@@ -488,6 +435,7 @@ class Solution:
                 return 1
             else:
                 return 2
+        return None
 
     def compare_solutions(self, solution):
         """
