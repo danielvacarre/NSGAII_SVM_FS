@@ -509,17 +509,17 @@ class Population:
         # Second pair: compare child3 and child4
         offspring[2], offspring[3] = self.select_best_offspring(offspring[2], offspring[3], method)
 
-        # Select the loser from the first pair (offspring[1]) and the winner from the second pair (offspring[2])
-        offspring[1].features = offspring[2].features
-        offspring[1].plane_coords = offspring[2].plane_coords
-        offspring[1].vectors = [offspring[2].vectors[0], offspring[2].vectors[1]]
+        # # Select the loser from the first pair (offspring[1]) and the winner from the second pair (offspring[2])
+        # offspring[1].features = offspring[2].features
+        # offspring[1].plane_coords = offspring[2].plane_coords
+        # offspring[1].vectors = [offspring[2].vectors[0], offspring[2].vectors[1]]
 
         # Update the solution IDs for the selected offspring
-        offspring[1].solution_id = solution_id
+        offspring[0].solution_id = solution_id
         offspring[2].solution_id = solution_id + 1
 
         # Return the selected best offspring
-        return [offspring[1], offspring[2]]
+        return [offspring[0], offspring[2]]
 
     @staticmethod
     def select_best_offspring(child1: Solution, child2: Solution, method: str):
