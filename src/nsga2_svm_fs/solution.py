@@ -61,7 +61,7 @@ class Solution:
         self.features = []  # List to hold selected features
         self.vectors = []  # List to hold vectors for solution representation
         self.plane_coords = []  # Coordinates in the decision plane
-        self.plane_term_b = []  # Bias terms for decision boundaries
+        self.plane_term_b = [0] * 3 # Bias terms for decision boundaries
 
         # Objectives: [distance, epsilon, cost, mc_pos, mc_neg]
         self.objective = [0] * 5
@@ -238,10 +238,10 @@ class Solution:
         for i in range(len(self.solution_data)):
             # Dot product between the data point and the coordinates
             independent_term = dot(self.solution_data.iloc[i].values, self.plane_coords)
-            self.plane_term_b.append(-independent_term)
+            self.plane_term_b[i] = -independent_term
 
         # Add the intermediate plane (mean of the bias terms)
-        self.plane_term_b.append(mean(self.plane_term_b))
+        self.plane_term_b[2] = mean(self.plane_term_b)
 
     @staticmethod
     def get_class_vector(class_, data, output):
